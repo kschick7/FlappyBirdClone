@@ -8,8 +8,8 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "Hover Boy";
-        config.width = 480;
-        config.height = 800;
+        config.width = 384;
+        config.height = 640;
 		new LwjglApplication(new HoverBoy(), config);
 	}
 }
