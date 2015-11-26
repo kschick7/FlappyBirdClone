@@ -1,5 +1,7 @@
 package com.kyleschick.hoverboy;
 
+import com.badlogic.gdx.Gdx;
+
 /**
  * Created by Kyle on 11/25/2015.
  */
@@ -43,7 +45,7 @@ public class Bird {
     }
 
     public void move() {
-        this.y += verticalSpeed;
+        this.y += Gdx.graphics.getDeltaTime() * verticalSpeed;
         if (this.y < 0) {
             this.y = 0;
         }

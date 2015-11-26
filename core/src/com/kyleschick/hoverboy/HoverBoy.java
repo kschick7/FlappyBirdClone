@@ -9,8 +9,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class HoverBoy extends ApplicationAdapter {
-	private static final double GRAVITY = -0.2;
-	private static final double JUMP_SPEED = 6;
+	private static final double GRAVITY = -14;
+	private static final double JUMP_SPEED = 350;
 
 	public enum State { MENU, INGAME, GAMEOVER, PAUSED }
 
@@ -19,14 +19,12 @@ public class HoverBoy extends ApplicationAdapter {
 	Texture backgroundTexture;
 	Texture birdTextures[];
 	Bird bird;
-	Clock clock;
 	Boolean spaceDown;
 	State state;
 
 	@Override
 	public void create () {
-		bird = new Bird(80, 300);
-		clock = new Clock();
+		bird = new Bird(70, 300);
 		spaceDown = false;
 		batch = new SpriteBatch();
 		inputManager = new InputManager();
@@ -39,7 +37,6 @@ public class HoverBoy extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		clock.tick(60);
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		batch.begin();
@@ -60,6 +57,9 @@ public class HoverBoy extends ApplicationAdapter {
 
 			if (inputManager.isKeyPressed(Input.Keys.ENTER))
 				state = State.PAUSED;
+
+
+
 		} else if (state == State.MENU) {
 			if (inputManager.isKeyPressed(Input.Keys.ENTER))
 				state = State.INGAME;
