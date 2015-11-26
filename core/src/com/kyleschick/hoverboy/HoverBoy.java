@@ -1,18 +1,21 @@
 package com.kyleschick.hoverboy;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 public class HoverBoy extends ApplicationAdapter {
 	private static final double GRAVITY = -0.2;
 	private static final double JUMP_SPEED = 6;
+
 	public enum State { MENU, INGAME, GAMEOVER, PAUSED }
 
 	SpriteBatch batch;
+	InputManager inputManager;
 	Texture backgroundTexture;
 	Texture birdTextures[];
 	Bird bird;
@@ -26,6 +29,7 @@ public class HoverBoy extends ApplicationAdapter {
 		clock = new Clock();
 		spaceDown = false;
 		batch = new SpriteBatch();
+		inputManager = new InputManager();
 		backgroundTexture = new Texture("background.png");
 		birdTextures = new Texture[2];
 		birdTextures[0] = new Texture("bird0.png");
@@ -42,25 +46,28 @@ public class HoverBoy extends ApplicationAdapter {
 
 		if (state == State.INGAME) {
 			batch.draw(backgroundTexture, 0, 0);
-			batch.draw(birdTextures[0], bird.getX(), bird.getY());
 
-			if (!spaceDown && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-				bird.setVerticleSpeed(JUMP_SPEED);
-				spaceDown = true;
-			} else {
-				bird.changeVerticleSpeed(GRAVITY);
-				spaceDown = Gdx.input.isKeyPressed(Input.Keys.SPACE);
-			}
+			if (inputManager.isKeyPressed(Input.Keys.SPACE))
+				bird.setVerticalSpeed(JUMP_SPEED);
+			else
+				bird.changeVerticalSpeed(GRAVITY);
+
 			bird.move();
+			if (bird.isFalling())
+				batch.draw(birdTextures[0], bird.getX(), bird.getY());
+			else
+				batch.draw(birdTextures[1], bird.getX(), bird.getY());
+
+			if (inputManager.isKeyPressed(Input.Keys.ENTER))
+				state = State.PAUSED;
 		} else if (state == State.MENU) {
-			if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
+			if (inputManager.isKeyPressed(Input.Keys.ENTER))
+				state = State.INGAME;
+		} else if (state == State.PAUSED) {
+			if (inputManager.isKeyPressed(Input.Keys.ENTER))
 				state = State.INGAME;
 		}
 
-
 		batch.end();
-
-
-
 	}
 }
