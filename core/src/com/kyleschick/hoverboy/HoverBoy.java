@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class HoverBoy extends ApplicationAdapter {
 	private static final float GRAVITY = -25;
 	private static final float JUMP_SPEED = 500;
-	private static final float OBSTACLE_INTERVAL = 1500;
+	private static final float OBSTACLE_INTERVAL = 1.5f;
 	private static final float HORIZONTAL_SPEED = 175;
 	private static final int BIRD_START_Y = 300;
 	private static final int BIRD_START_X = 70;
@@ -25,7 +25,7 @@ public class HoverBoy extends ApplicationAdapter {
 	private static final int BIRD_WIDTH = 38;
 	private static final int BIRD_HEIGHT = 28;
 
-	public enum State { MENU, INGAME, GAMEOVER, PAUSED }
+	public enum State { MENU, IN_GAME, GAME_OVER, PAUSED }
 
 	SpriteBatch batch;
 	InputManager inputManager;
@@ -38,7 +38,7 @@ public class HoverBoy extends ApplicationAdapter {
 	ArrayList<Rectangle> obstaclesBottom;
 	OrthographicCamera camera;
 	float birdSpeed;
-	long obstacleTime;
+	float obstacleTime;
 
 	@Override
 	public void create () {
@@ -69,15 +69,16 @@ public class HoverBoy extends ApplicationAdapter {
 
 		batch.begin();
 
-		if (state == State.INGAME) {
+		if (state == State.IN_GAME) {
 			batch.draw(backgroundTexture, 0, 0);
 			if (inputManager.isKeyPressed(Input.Keys.SPACE) || inputManager.isTapped())
 				birdSpeed = JUMP_SPEED;
 			renderObstacles(true);
 			renderBird();
 
-			if (System.currentTimeMillis() - obstacleTime >= OBSTACLE_INTERVAL) {
-				obstacleTime = System.currentTimeMillis();
+			obstacleTime += Gdx.graphics.getDeltaTime();
+			if (obstacleTime >= OBSTACLE_INTERVAL) {
+				obstacleTime = 0;
 				spawnObstacles();
 			}
 
@@ -85,18 +86,18 @@ public class HoverBoy extends ApplicationAdapter {
 				state = State.PAUSED;
 		} else if (state == State.MENU) {
 			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped()) {
-				state = State.INGAME;
+				state = State.IN_GAME;
 				obstacleTime = System.currentTimeMillis();
 			}
 		} else if (state == State.PAUSED) {
 			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped())
-				state = State.INGAME;
-		} else if (state == State.GAMEOVER) {
+				state = State.IN_GAME;
+		} else if (state == State.GAME_OVER) {
 			batch.draw(backgroundTexture, 0, 0);
 			renderObstacles(false);
 			renderBird();
 			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped()) {
-				state = State.INGAME;
+				state = State.IN_GAME;
 				obstaclesTop.clear();
 				obstaclesBottom.clear();
 				bird.setY(BIRD_START_Y);
@@ -132,8 +133,8 @@ public class HoverBoy extends ApplicationAdapter {
 				batch.draw(pipeTextures[0], obstaclesTop.get(i).x - OBSTACLE_MARGIN / 2, obstaclesTop.get(i).y - OBSTACLE_MARGIN / 2);
 				batch.draw(pipeTextures[1], obstaclesBottom.get(i).x - OBSTACLE_MARGIN / 2, obstaclesBottom.get(i).y - OBSTACLE_MARGIN / 2);
 				if ((bird.overlaps(obstaclesTop.get(i)) || bird.overlaps(obstaclesBottom.get(i)))
-						&& state == State.INGAME)
-					state = State.GAMEOVER;
+						&& state == State.IN_GAME)
+					state = State.GAME_OVER;
 			}
 		}
 	}
