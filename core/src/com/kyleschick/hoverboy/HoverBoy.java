@@ -1,18 +1,15 @@
 package com.kyleschick.hoverboy;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Timer;
-import org.w3c.dom.css.Rect;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class HoverBoy extends ApplicationAdapter {
 	private static final float GRAVITY = -25;
@@ -27,7 +24,6 @@ public class HoverBoy extends ApplicationAdapter {
 
 	SpriteBatch batch;
 	InputManager inputManager;
-	long obstacleTime;
 	Texture backgroundTexture;
 	Texture birdTextures[];
 	Texture pipeTextures[];
@@ -36,6 +32,7 @@ public class HoverBoy extends ApplicationAdapter {
 	ArrayList<Rectangle> obstaclesTop;
 	ArrayList<Rectangle> obstaclesBottom;
 	float birdSpeed;
+	long obstacleTime;
 
 	@Override
 	public void create () {
@@ -132,5 +129,16 @@ public class HoverBoy extends ApplicationAdapter {
 			batch.draw(birdTextures[0], bird.getX(), bird.getY());
 		else
 			batch.draw(birdTextures[1], bird.getX(), bird.getY());
+	}
+
+	@Override
+	public void dispose() {
+		// dispose of all the native resources
+		birdTextures[0].dispose();
+		birdTextures[1].dispose();
+		backgroundTexture.dispose();
+		pipeTextures[0].dispose();
+		pipeTextures[1].dispose();
+		batch.dispose();
 	}
 }
