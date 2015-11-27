@@ -21,6 +21,7 @@ public class HoverBoy extends ApplicationAdapter {
 	private static final float HORIZONTAL_SPEED = 175;
 	private static final int BIRD_START_Y = 300;
 	private static final int BIRD_START_X = 70;
+	private static final int OBSTACLE_MARGIN = 25;
 
 	public enum State { MENU, INGAME, GAMEOVER, PAUSED }
 
@@ -105,8 +106,8 @@ public class HoverBoy extends ApplicationAdapter {
 
 	public void spawnObstacles() {
 		int openingHeight = MathUtils.random(100, 450) ;
-		obstaclesTop.add(new Rectangle(600, 640 - openingHeight, 100, 500));
-		obstaclesBottom.add(new Rectangle(600, -openingHeight, 100, 500));
+		obstaclesTop.add(new Rectangle(600, 640 - openingHeight, 100 - OBSTACLE_MARGIN, 500 - OBSTACLE_MARGIN));
+		obstaclesBottom.add(new Rectangle(600, -openingHeight, 100 - OBSTACLE_MARGIN, 500 - OBSTACLE_MARGIN));
 	}
 
 	public void renderObstacles(boolean moving) {
@@ -115,8 +116,9 @@ public class HoverBoy extends ApplicationAdapter {
 				move(obstaclesTop.get(i), -HORIZONTAL_SPEED, 0);
 				move(obstaclesBottom.get(i), -HORIZONTAL_SPEED, 0);
 			}
-			batch.draw(pipeTextures[0], obstaclesTop.get(i).x, obstaclesTop.get(i).y);
-			batch.draw(pipeTextures[1], obstaclesBottom.get(i).x, obstaclesBottom.get(i).y);
+			obstaclesTop.get(i);
+			batch.draw(pipeTextures[0], obstaclesTop.get(i).x - OBSTACLE_MARGIN / 2, obstaclesTop.get(i).y - OBSTACLE_MARGIN / 2);
+			batch.draw(pipeTextures[1], obstaclesBottom.get(i).x - OBSTACLE_MARGIN / 2, obstaclesBottom.get(i).y - OBSTACLE_MARGIN / 2);
 			if ((bird.overlaps(obstaclesTop.get(i)) || bird.overlaps(obstaclesBottom.get(i)))
 					&& state == State.INGAME)
 				state = State.GAMEOVER;
