@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,7 +19,11 @@ public class HoverBoy extends ApplicationAdapter {
 	private static final float HORIZONTAL_SPEED = 175;
 	private static final int BIRD_START_Y = 300;
 	private static final int BIRD_START_X = 70;
-	private static final int OBSTACLE_MARGIN = 25;
+	private static final int OBSTACLE_MARGIN = 15;
+	private static final int PIPE_WIDTH = 497;
+	private static final int PIPE_HEIGHT = 94;
+	private static final int BIRD_WIDTH = 38;
+	private static final int BIRD_HEIGHT = 28;
 
 	public enum State { MENU, INGAME, GAMEOVER, PAUSED }
 
@@ -31,12 +36,13 @@ public class HoverBoy extends ApplicationAdapter {
 	State state;
 	ArrayList<Rectangle> obstaclesTop;
 	ArrayList<Rectangle> obstaclesBottom;
+	OrthographicCamera camera;
 	float birdSpeed;
 	long obstacleTime;
 
 	@Override
 	public void create () {
-		bird = new Rectangle(BIRD_START_X, BIRD_START_Y, 40, 30);
+		bird = new Rectangle(BIRD_START_X, BIRD_START_Y, BIRD_WIDTH, BIRD_HEIGHT);
 		obstacleTime = 0;
 		batch = new SpriteBatch();
 		obstaclesTop = new ArrayList();
@@ -49,6 +55,8 @@ public class HoverBoy extends ApplicationAdapter {
 		pipeTextures = new Texture[2];
 		pipeTextures[0] = new Texture("topPipe.png");
 		pipeTextures[1] = new Texture("bottomPipe.png");
+		camera = new OrthographicCamera();
+		camera.setToOrtho(false, 397, 707);
 		state = State.MENU;
 	}
 
@@ -56,11 +64,14 @@ public class HoverBoy extends ApplicationAdapter {
 	public void render () {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		camera.update();
+		batch.setProjectionMatrix(camera.combined);
+
 		batch.begin();
 
 		if (state == State.INGAME) {
 			batch.draw(backgroundTexture, 0, 0);
-			if (inputManager.isKeyPressed(Input.Keys.SPACE))
+			if (inputManager.isKeyPressed(Input.Keys.SPACE) || inputManager.isTapped())
 				birdSpeed = JUMP_SPEED;
 			renderObstacles(true);
 			renderBird();
@@ -73,18 +84,18 @@ public class HoverBoy extends ApplicationAdapter {
 			if (inputManager.isKeyPressed(Input.Keys.ENTER))
 				state = State.PAUSED;
 		} else if (state == State.MENU) {
-			if (inputManager.isKeyPressed(Input.Keys.ENTER)) {
+			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped()) {
 				state = State.INGAME;
 				obstacleTime = System.currentTimeMillis();
 			}
 		} else if (state == State.PAUSED) {
-			if (inputManager.isKeyPressed(Input.Keys.ENTER))
+			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped())
 				state = State.INGAME;
 		} else if (state == State.GAMEOVER) {
 			batch.draw(backgroundTexture, 0, 0);
 			renderObstacles(false);
 			renderBird();
-			if (inputManager.isKeyPressed(Input.Keys.ENTER)) {
+			if (inputManager.isKeyPressed(Input.Keys.ENTER) || inputManager.isTapped()) {
 				state = State.INGAME;
 				obstaclesTop.clear();
 				obstaclesBottom.clear();
@@ -103,8 +114,8 @@ public class HoverBoy extends ApplicationAdapter {
 
 	public void spawnObstacles() {
 		int openingHeight = MathUtils.random(100, 450) ;
-		obstaclesTop.add(new Rectangle(600, 640 - openingHeight, 100 - OBSTACLE_MARGIN, 500 - OBSTACLE_MARGIN));
-		obstaclesBottom.add(new Rectangle(600, -openingHeight, 100 - OBSTACLE_MARGIN, 500 - OBSTACLE_MARGIN));
+		obstaclesTop.add(new Rectangle(600, 640 - openingHeight, PIPE_HEIGHT - OBSTACLE_MARGIN, PIPE_WIDTH - OBSTACLE_MARGIN));
+		obstaclesBottom.add(new Rectangle(600, -openingHeight, PIPE_HEIGHT - OBSTACLE_MARGIN, PIPE_WIDTH - OBSTACLE_MARGIN));
 	}
 
 	public void renderObstacles(boolean moving) {

@@ -31,5 +31,18 @@ public class InputManager {
         return false;
     }
 
+    public boolean isTapped() {
+        if (Gdx.input.isTouched()) {
+            if (!mousePressed) {
+                mousePressed = true;
+                return true;
+            }
+            return false;
+        } else {
+            mousePressed = false;
+            return false;
+        }
+    }
+
 
 }
