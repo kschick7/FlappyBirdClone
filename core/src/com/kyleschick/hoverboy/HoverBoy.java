@@ -109,16 +109,21 @@ public class HoverBoy extends ApplicationAdapter {
 
 	public void renderObstacles(boolean moving) {
 		for (int i = 0; i < obstaclesTop.size(); ++i) {
-			if (moving) {
-				move(obstaclesTop.get(i), -HORIZONTAL_SPEED, 0);
-				move(obstaclesBottom.get(i), -HORIZONTAL_SPEED, 0);
+			if (obstaclesTop.get(i).x < -100) {
+				obstaclesTop.remove(i);
+				obstaclesBottom.remove(i--);
+			} else {
+				if (moving) {
+					move(obstaclesTop.get(i), -HORIZONTAL_SPEED, 0);
+					move(obstaclesBottom.get(i), -HORIZONTAL_SPEED, 0);
+				}
+				obstaclesTop.get(i);
+				batch.draw(pipeTextures[0], obstaclesTop.get(i).x - OBSTACLE_MARGIN / 2, obstaclesTop.get(i).y - OBSTACLE_MARGIN / 2);
+				batch.draw(pipeTextures[1], obstaclesBottom.get(i).x - OBSTACLE_MARGIN / 2, obstaclesBottom.get(i).y - OBSTACLE_MARGIN / 2);
+				if ((bird.overlaps(obstaclesTop.get(i)) || bird.overlaps(obstaclesBottom.get(i)))
+						&& state == State.INGAME)
+					state = State.GAMEOVER;
 			}
-			obstaclesTop.get(i);
-			batch.draw(pipeTextures[0], obstaclesTop.get(i).x - OBSTACLE_MARGIN / 2, obstaclesTop.get(i).y - OBSTACLE_MARGIN / 2);
-			batch.draw(pipeTextures[1], obstaclesBottom.get(i).x - OBSTACLE_MARGIN / 2, obstaclesBottom.get(i).y - OBSTACLE_MARGIN / 2);
-			if ((bird.overlaps(obstaclesTop.get(i)) || bird.overlaps(obstaclesBottom.get(i)))
-					&& state == State.INGAME)
-				state = State.GAMEOVER;
 		}
 	}
 
